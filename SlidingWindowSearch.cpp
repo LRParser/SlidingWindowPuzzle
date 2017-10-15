@@ -6,6 +6,7 @@
  */
 
 #include "SlidingWindowSearch.h"
+#include <chrono>
 
 bool debugBFS = false;
 bool debugDFS = false;
@@ -204,8 +205,6 @@ GraphSearchResult SlidingWindowSearch::searchViaIterativeDeepening(SlidingWindow
 		}
 	}
 
-	std::cout << "All iteration run on IDS" << std::endl;
-
 	return GraphSearchResult(0,0.0f,std::vector<Move>());
 
 }
@@ -247,7 +246,9 @@ int main() {
 
 	swp = SlidingWindowPuzzle(level1FileName);
 	sws = SlidingWindowSearch();
+	auto start = std::chrono::high_resolution_clock::now();
 	gsr = sws.searchViaBFS(swp);
+	auto stop = std::chrono::high_resolution_clock::now();
 	std::vector<Move> bfsSol = gsr.foundSolutionMoves;
 	swp = SlidingWindowPuzzle(level1FileName);
 
@@ -257,14 +258,19 @@ int main() {
 	}
 
 	swp.printGameBoardState();
-	std::cout << "#" << gsr.nodesExpanded << " " << gsr.timeElapsed << " " << bfsSol.size() << std::endl;
+	std::chrono::duration<double> elapsed = stop - start;
+
+	std::cout << "#" << gsr.nodesExpanded << " " << elapsed.count() << " " << bfsSol.size() << std::endl;
 
 	std::cout << "End of found BFS solution" << std::endl;
 
 	swp = SlidingWindowPuzzle(level1FileName);
 
 	sws = SlidingWindowSearch();
+	start = std::chrono::high_resolution_clock::now();
 	gsr = sws.searchViaDFS(swp);
+	stop = std::chrono::high_resolution_clock::now();
+
 	std::vector<Move> dfsSol = gsr.foundSolutionMoves;
 
 	for (Move m : dfsSol) {
@@ -274,8 +280,8 @@ int main() {
 
 	swp.printGameBoardState();
 
-
-	std::cout << "#" << gsr.nodesExpanded << " " << gsr.timeElapsed << " " << dfsSol.size() << std::endl;
+	elapsed = stop - start;
+	std::cout << "#" << gsr.nodesExpanded << " " << elapsed.count() << " " << dfsSol.size() << std::endl;
 	std::cout << "End of found DFS solution" << std::endl;
 	dfsExplored.clear();
 
@@ -283,7 +289,9 @@ int main() {
 	swp = SlidingWindowPuzzle(level1FileName);
 	sws = SlidingWindowSearch();
 
+	start = std::chrono::high_resolution_clock::now();
 	gsr = sws.searchViaIterativeDeepening(swp);
+	stop = std::chrono::high_resolution_clock::now();
 	std::vector<Move> idsSol = gsr.foundSolutionMoves;
 
 	for (Move m : idsSol) {
@@ -292,8 +300,8 @@ int main() {
 	}
 
 	swp.printGameBoardState();
-
-	std::cout << "#" << gsr.nodesExpanded << " " << gsr.timeElapsed << " " << idsSol.size() << std::endl;
+	elapsed = stop - start;
+	std::cout << "#" << gsr.nodesExpanded << " " << elapsed.count() << " " << idsSol.size() << std::endl;
 	std::cout << "End of found IDS solution" << std::endl;
 
 
