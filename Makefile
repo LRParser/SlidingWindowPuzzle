@@ -4,10 +4,10 @@ EXEC = hw1
 HEADERS = SlidingWindowPuzzle.h SlidingWindowSearch.h Move.h GraphSearchResult.h
 SOURCES = SlidingWindowPuzzle.cpp SlidingWindowSearch.cpp Move.cpp GraphSearchResult.cpp
 
+all: clean $(SOURCES) $(EXEC)
+
 clean:
 	rm -f $(OBJECTS) $(EXEC)
-
-all: clean $(SOURCES) $(EXEC)
 
 objs:
 	g++  -Wall -DDEBUG -g -std=c++11 -O2  -c -o SlidingWindowPuzzle.o SlidingWindowPuzzle.cpp
