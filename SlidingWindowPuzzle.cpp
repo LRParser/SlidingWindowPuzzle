@@ -547,7 +547,10 @@ void SlidingWindowPuzzle::applyMoveLeft(Move m) {
 	// First, find the right-most column and clear it
 	for(int i = 0; i < rowCount; i++) {
 
-		for(int j = columnCount; j > 0; j--) {
+		for(int j = columnCount - 1; j > 0; j--) {
+			if(!isLegalArrayAccess(i,j)) {
+				std::cout << "Illegal array access in apply moveLeft: " << i << j << std::endl;
+			}
 			if(array[i][j] == pieceId) {
 
 				if(debugMoves) {
@@ -556,6 +559,9 @@ void SlidingWindowPuzzle::applyMoveLeft(Move m) {
 				array[i][j] = 0;
 				// Now go down the rows
 				for(int k = i + 1; k < rowCount; k++) {
+					if(!isLegalArrayAccess(k,j)) {
+						std::cout << "Illegal array access in applyMoveLeft: " << i << " , " << j << std::endl;
+					}
 					if(array[k][j] == pieceId) {
 						if(debugMoves) {
 							cout << "Clearing index: " << k << ", " << j << endl;
@@ -578,6 +584,9 @@ void SlidingWindowPuzzle::applyMoveLeft(Move m) {
 	int leftMostColumn = -1;
 	for(int i = 0; i < rowCount; i++) {
 		for(int j = 0; j < columnCount; j++) {
+			if(!isLegalArrayAccess(i,j)) {
+				std::cout << "Illegal array access in findLeftMostColumn: " << i  << ", " << j << std::endl;
+			}
 			if(originalState[i][j] == pieceId) {
 				leftMostColumn = j;
 				goto writePieceRowLeftOfLeftMostColumn;
@@ -594,6 +603,10 @@ void SlidingWindowPuzzle::applyMoveLeft(Move m) {
 	}
 	for(int i = 0; i < rowCount; i++) {
 		if(originalState[i][leftMostColumn] == pieceId) {
+			if(!isLegalArrayAccess(i,leftMostColumn - 1)) {
+				std::cout << "Illegal array access in writePieceRowLeftOfLeftMostColumn: " << i << leftMostColumn - 1 << std::endl;
+
+			}
 			array[i][leftMostColumn - 1] = pieceId;
 		}
 	}
@@ -641,7 +654,7 @@ void SlidingWindowPuzzle::applyMoveRight(Move m) {
 	int rightMostColumn = -1;
 	for(int i = 1; i < rowCount; i++) {
 
-		for(int j = columnCount; j > -1; j--) {
+		for(int j = columnCount - 1; j > 0; j--) {
 			if(originalState[i][j] == pieceId) {
 				rightMostColumn = j;
 				goto writePieceRowRightOfRightMostColumn;

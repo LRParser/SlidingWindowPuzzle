@@ -11,7 +11,10 @@
 
 bool debugBFS = false;
 bool debugDFS = false;
+bool debugAStar = false;
 std::vector<SlidingWindowPuzzle> dfsExplored;
+std::vector<SlidingWindowPuzzle> aStarExplored;
+
 
 bool comparePuzzles(const SlidingWindowPuzzle & l, const SlidingWindowPuzzle & r) //(2)
 {
@@ -224,100 +227,74 @@ GraphSearchResult SlidingWindowSearch::searchViaIterativeDeepening(SlidingWindow
 
 }
 
-GraphSearchResult SlidingWindowSearch::searchViaAStar(SlidingWindowPuzzle startState) {
+GraphSearchResult SlidingWindowSearch::searchViaAStar(SlidingWindowPuzzle swp) {
 
-	std::deque<SlidingWindowPuzzle> frontier;
-	std::vector<SlidingWindowPuzzle> explored;
-
-	if(startState.isComplete()) {
-		if(debugBFS) {
-			std::cout << "Start state has solution" << std::endl;
-		}
-		return GraphSearchResult(0,0.0f,startState.foundSolutionMoves);
+	if(swp.isComplete()) {
+		GraphSearchResult gsr(aStarExplored.size(),0.0f,swp.foundSolutionMoves);
+		return gsr;
 	}
+	else {
 
-	frontier.push_back(startState);
-	int i = 0;
-	while(true) {
-		if(debugBFS) {
-			std::cout << "Starting iteration: " << i << std::endl;
-		}
-		i++;
-		if(frontier.empty()) {
-			return GraphSearchResult(i,0.0f,std::vector<Move>());
-		}
-		else {
-//			SlidingWindowPuzzle currentPuzzle = frontier.front();
-//			frontier.pop_front();
-
-		    std::sort(frontier.begin(), frontier.end(), comparePuzzles);//works if comparison function is present (2)
-
-			SlidingWindowPuzzle currentPuzzle = frontier.front();
-			frontier.pop_front();
-
-
-			if(debugBFS) {
-				currentPuzzle.printGameBoardState();
+		for(SlidingWindowPuzzle explored : aStarExplored) {
+			if(swp.isEqualTo(explored)) {
+				if(debugAStar) {
+					std::cout << "Already seen this state" << std::endl;
+				}
+				GraphSearchResult gsr(0,0.0f,std::vector<Move>());
+				return gsr;
 			}
-			explored.push_back(currentPuzzle.normalize());
+			else {
+				if(debugAStar) {
+					std::cout << "Already saw: " << std::endl;
+					explored.printGameBoardState();
+					std::cout << "But this is: " << std::endl;
+					swp.printGameBoardState();
+				}
 
-					for(Move m : currentPuzzle.getAllLegalMoves()) {
-						if(debugBFS) {
-							std::cout << "Looking at move: " << m.pieceId << " to: " << m.direction << std::endl;
-						}
-						SlidingWindowPuzzle nextState = currentPuzzle.applyMoveCloning(m);
-						bool inExplored = false;
-
-						SlidingWindowPuzzle nextStateNormalized = nextState.normalize();
-
-
-						for(SlidingWindowPuzzle exploredState : explored) {
-							if(nextStateNormalized.isEqualTo(exploredState)) {
-								if(debugBFS) {
-									std::cout << "State in explored" << std::endl;
-								}
-								inExplored = true;
-							}
-						}
-
-						bool inFrontier = false;
-
-						for(SlidingWindowPuzzle frontierState : frontier) {
-							if(nextState.isEqualTo(frontierState)) {
-								if(debugBFS) {
-									std::cout << "State in frontier" << std::endl;
-								}
-								inFrontier = true;
-							}
-						}
-
-
-						if(!inExplored && !inFrontier) {
-							if(nextState.isComplete()) {
-								if(debugBFS) {
-									std::cout << "Found a solution via AStar" << std::endl;
-								}
-								GraphSearchResult gsr(i,0.0f,nextState.foundSolutionMoves);
-								return gsr;
-							}
-							frontier.push_back(nextState);
-						}
 			}
 		}
+
+		// Add it to the explored list since we already checked if it's a solution
+		aStarExplored.push_back(swp);
+
+
+		std::vector<Move> moveList = swp.getAllLegalMoves();
+
+		std::vector<SlidingWindowPuzzle> relatedPuzzles;
+
+		for(Move m : moveList) {
+			if(debugAStar) {
+				std::cout << "Looking at moving: " << m.pieceId << " direction: " << m.direction << std::endl;
+			}
+			relatedPuzzles.push_back(swp.applyMoveCloning(m));
+		}
+
+	    std::sort(relatedPuzzles.begin(), relatedPuzzles.end(), comparePuzzles);
+
+	    for(SlidingWindowPuzzle swpNew : relatedPuzzles) {
+			GraphSearchResult gsr = searchViaAStar(swpNew);
+			std::vector<Move> solutionMoves = gsr.foundSolutionMoves;
+			if(solutionMoves.size() > 0) {
+				GraphSearchResult gsr(aStarExplored.size(),0.0f,solutionMoves);
+				return gsr;
+			}
+	    }
+
 	}
-	return GraphSearchResult(i,0.0f,std::vector<Move>());
+	GraphSearchResult gsr(0,0.0f,std::vector<Move>());
+	return gsr;
 }
 
 
+
 int main() {
+
 	SlidingWindowPuzzle swp;
-
-
-
 	SlidingWindowSearch sws;
 	GraphSearchResult gsr;
 	std::string level0FileName = "SBP-level0.txt";
 	std::string level1FileName = "SBP-level1.txt";
+
 
 
 	// PART 1 - Random Walk
@@ -414,16 +391,14 @@ int main() {
 
 	for (Move m : aStarSol) {
 		std::cout << "(" << m.pieceId << "," << m.direction << ")" << std::endl;
-		swp.printGameBoardState();
-
 		swp.applyMove(m);
-
 	}
 
 	swp.printGameBoardState();
 	elapsed = stop - start;
-	std::cout << "#" << gsr.nodesExpanded << " " << elapsed.count() << " " << idsSol.size() << std::endl;
-	std::cout << "End of found IDS solution" << std::endl;
+	std::cout << "#" << gsr.nodesExpanded << " " << elapsed.count() << " " << aStarSol.size() << std::endl;
+	std::cout << "End of found AStar solution" << std::endl;
 
 	return 0;
+
 }
