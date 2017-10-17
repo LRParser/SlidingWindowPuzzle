@@ -34,4 +34,11 @@ As per instructions it is hard-coded to first process SBP-level0.txt and then SB
 
 ## Example output
 
-Example output is provided in the RESULTS file. It first shows a random walk on SBP-level0, then BFS, DFS, IDS, and AStar search on SBP-level1
+Example output is provided in the output-hw1.txt file. It first shows a random walk on SBP-level0, then BFS, DFS, IDS, and AStar search on SBP-level1
+
+This was run on tux at:
+```
+cd ~/jth82/SlidingWindowPuzzle
+make all
+./hw1 > output-hw1
+```
