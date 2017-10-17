@@ -18,13 +18,12 @@ public:
 	SlidingWindowPuzzle startState;
 	std::vector<SlidingWindowPuzzle> dfsExplored;
 	SlidingWindowSearch();
-	SlidingWindowSearch(SlidingWindowPuzzle);
 	virtual ~SlidingWindowSearch();
 	GraphSearchResult searchViaBFS(SlidingWindowPuzzle);
 	GraphSearchResult searchViaDFS(SlidingWindowPuzzle);
 	GraphSearchResult searchViaDLS(SlidingWindowPuzzle, int);
 	GraphSearchResult searchViaIterativeDeepening(SlidingWindowPuzzle);
-
+	GraphSearchResult searchViaAStar(SlidingWindowPuzzle);
 
 };
 

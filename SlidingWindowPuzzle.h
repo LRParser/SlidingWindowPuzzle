@@ -67,8 +67,38 @@ public:
 	bool squareRightIsFree(int,int,int);
 	bool squareAboveIsFree(int,int,int);
 	bool squareBelowIsFree(int,int,int);
+	int getDistanceOfMasterBrickToGoal(void) const;
+	/*
+	bool operator<(const SlidingWindowPuzzle& otherPuzzle) {
+		int thisGScore = getDistanceOfMasterBrickToGoal();
+		int thisHScore = (int) foundSolutionMoves.size();
+		int thisFScore = thisGScore + thisHScore;
+
+		int otherGScore = otherPuzzle.getDistanceOfMasterBrickToGoal();
+		int otherHScore = (int) otherPuzzle.foundSolutionMoves.size();
+		int otherFScore = otherGScore + otherHScore;
+
+
+	    return thisFScore < otherFScore;
+	}
+
+	bool operator>(const SlidingWindowPuzzle& otherPuzzle) {
+		int thisGScore = getDistanceOfMasterBrickToGoal();
+		int thisHScore = (int) foundSolutionMoves.size();
+		int thisFScore = thisGScore + thisHScore;
+
+		int otherGScore = otherPuzzle.getDistanceOfMasterBrickToGoal();
+		int otherHScore = (int) otherPuzzle.foundSolutionMoves.size();
+		int otherFScore = otherGScore + otherHScore;
+
+	    return thisFScore > otherFScore;
+	}
+	*/
 
 };
+
+
+//bool comparePuzzles(const SlidingWindowPuzzle, const SlidingWindowPuzzle);
 
 
 

@@ -120,10 +120,44 @@ SlidingWindowPuzzle::~SlidingWindowPuzzle() {
 
 }
 
+int SlidingWindowPuzzle::getDistanceOfMasterBrickToGoal() const {
 
-int distanceOfMasterBrickToGoal(int** array) {
+	// First find master brick position
+	int mbRow = 0;
+	int mbColumn = 0;
+	for(int i = 0; i < rowCount; i++) {
+		for(int j = 0; j < columnCount; j++)
+			if(array[i][j] == 2) {
+				mbRow = i;
+				mbColumn = j;
+			}
+	}
 
-	return 0;
+	int goalRow = 0;
+	int goalColumn = 0;
+
+	for(int i = 0; i < rowCount; i++) {
+		for(int j = 0; j < columnCount; j++)
+			if(array[i][j] == -1) {
+				goalRow = i;
+				goalColumn = j;
+			}
+	}
+
+	// Now let's get the abs diff of rows and column, and add
+
+	int rowDiff = mbRow - goalRow;
+	if(rowDiff < 0) {
+		rowDiff *= -1;
+	}
+
+	int columnDiff = mbColumn - goalColumn;
+	if(columnDiff < 0) {
+		columnDiff *= -1;
+	}
+
+
+	return rowDiff + columnDiff;
 }
 
 int** SlidingWindowPuzzle::cloneState(int** sourceArray) {
